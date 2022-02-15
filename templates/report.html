@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>哔哩哔哩解析服务器 - 举报</title>
+</head>
+
+<body>
+    <h1>举报系统，请勿滥用</h1>
+    <h2>举报 提及漫游 和 公开分享解析服务器地址 B站用户 UID</h2>
+    {% if alert %}
+    <h3 style="background: red;color: white;">{{ alert }}</h3>
+    {% endif %}
+    <form method="post" action="/report.php" enctype="multipart/form-data">
+        <div>
+            <label for="uid">UID:</label><br>
+            <input type="text" id="uid" name="uid" minlength="1" maxlength="16" placeholder="114514" required>
+        </div>
+        <div>
+            <label for="source">来源:</label><br>
+            <input type="text" id="source" name="source" minlength="1" maxlength="16" placeholder="动态|av114514|ep114514"
+                required>
+        </div>
+        <div>
+            <label for="desc">说明:</label><br>
+            <input type="text" id="desc" name="desc" minlength="1" maxlength="32" placeholder="叔叔我啊真的生气了" required>
+        </div>
+        <div>
+            <label for="screenshot">截图:</label>
+            <input type="file" id="screenshot" name="screenshot" accept="image/png, image/jpeg" required>
+        </div>
+        <br>
+        <div>
+            <input type="submit" value="举报！" name="report">
+        </div>
+    </form>
+</body>
+
+</html>

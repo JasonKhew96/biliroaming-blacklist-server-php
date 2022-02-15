@@ -1,0 +1,39 @@
+<?php
+
+namespace Qimo;
+
+define('IS_TEST', true);
+
+if (IS_TEST) {
+    // DATABASE
+    define('DB_HOST', '');
+    define('DB_USERNAME', '');
+    define('DB_PASSWORD', '');
+    define('DB_NAME', '');
+
+    // TELEGRAM
+    define('TG_USERNAME', '');
+    define('TG_BOT_TOKEN', '');
+    define('TG_CHANNEL_ID', -1);
+    define('TG_WEBHOOK_URL', 'https://example.com/tgbot/webhook.php');
+    define('TG_ADMIN', array());
+    define('TG_SECRET', '');
+
+    define('TG_REPORTS_CHAT', -1);
+} else {
+    // DATABASE
+    define('DB_HOST', '');
+    define('DB_USERNAME', '');
+    define('DB_PASSWORD', '');
+    define('DB_NAME', '');
+
+    // TELEGRAM
+    define('TG_USERNAME', '');
+    define('TG_BOT_TOKEN', '');
+    define('TG_CHANNEL_ID', -1);
+    define('TG_WEBHOOK_URL', 'https://example.com/tgbot/webhook.php');
+    define('TG_ADMIN', array());
+    define('TG_SECRET', '');
+
+    define('TG_REPORTS_CHAT', -1);
+}
