@@ -103,6 +103,14 @@ if (isset($_POST['report']) && isset($_POST['uid']) && $_POST['source'] && $_POS
     if (in_array($imageFileType, $extensions_arr)) {
         // Upload file
         if (move_uploaded_file($_FILES['screenshot']['tmp_name'], $saved_path)) {
+            // get image dimension
+            list($width, $height) = getimagesize($saved_path);
+            if ($width == false || $height == false) {
+                // delete
+                unlink($saved_path);
+                echo $twig->render('report.html', ['alert' => '未知错误']);
+                return;
+            }
             // Insert record
             if ($db->insert_report($uid, $source, $desc, $_SERVER['REMOTE_ADDR'])) {
                 try {
@@ -125,17 +133,38 @@ if (isset($_POST['report']) && isset($_POST['uid']) && $_POST['source'] && $_POS
 
                     $uname = $info->data[0]->uname;
 
-                    Request::sendPhoto([
-                        'chat_id' => TG_REPORTS_CHAT,
-                        'photo' => Request::encodeFile($saved_path),
-                        'reply_markup' => $inline_keyboard,
-                        'caption' => '新封锁' . PHP_EOL .
-                            'UID: <code>' . $uid . '</code>' . PHP_EOL .
-                            '用户空间: <a href="https://space.bilibili.com/' . $uid . '">' . $uname . '</a>' . PHP_EOL .
-                            '来源: ' . $_POST['source'] . PHP_EOL .
-                            '说明: ' . $_POST['desc'],
-                        'parse_mode' => 'HTML',
-                    ]);
+                    $ratio = 0;
+                    if ($width > $height) {
+                        $ratio = $width / $height;
+                    } else {
+                        $ratio = $height / $width;
+                    }
+
+                    if ($ratio > 2) {
+                        Request::sendDocument([
+                            'chat_id' => TG_REPORTS_CHAT,
+                            'document' => Request::encodeFile($saved_path),
+                            'reply_markup' => $inline_keyboard,
+                            'caption' => '新封锁' . PHP_EOL .
+                                'UID: <code>' . $uid . '</code>' . PHP_EOL .
+                                '用户空间: <a href="https://space.bilibili.com/' . $uid . '">' . $uname . '</a>' . PHP_EOL .
+                                '来源: ' . $_POST['source'] . PHP_EOL .
+                                '说明: ' . $_POST['desc'],
+                            'parse_mode' => 'HTML',
+                        ]);
+                    } else {
+                        Request::sendPhoto([
+                            'chat_id' => TG_REPORTS_CHAT,
+                            'photo' => Request::encodeFile($saved_path),
+                            'reply_markup' => $inline_keyboard,
+                            'caption' => '新封锁' . PHP_EOL .
+                                'UID: <code>' . $uid . '</code>' . PHP_EOL .
+                                '用户空间: <a href="https://space.bilibili.com/' . $uid . '">' . $uname . '</a>' . PHP_EOL .
+                                '来源: ' . $_POST['source'] . PHP_EOL .
+                                '说明: ' . $_POST['desc'],
+                            'parse_mode' => 'HTML',
+                        ]);
+                    }
 
                     // delete
                     unlink($saved_path);
