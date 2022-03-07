@@ -146,14 +146,14 @@ if (isset($_POST['report']) && isset($_POST['uid']) && $_POST['source'] && $_POS
 
                     $uname = $info->data[0]->uname;
 
-                    $ratio = 0;
+                    $ratio = 0.0;
                     if ($width > $height) {
                         $ratio = $width / $height;
                     } else {
                         $ratio = $height / $width;
                     }
 
-                    if ($ratio > 2) {
+                    if ($ratio > 2.5) {
                         Request::sendDocument([
                             'chat_id' => TG_REPORTS_CHAT,
                             'document' => Request::encodeFile($saved_path),
