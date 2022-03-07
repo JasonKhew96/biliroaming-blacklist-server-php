@@ -103,6 +103,19 @@ if (isset($_POST['report']) && isset($_POST['uid']) && $_POST['source'] && $_POS
     if (in_array($imageFileType, $extensions_arr)) {
         // Upload file
         if (move_uploaded_file($_FILES['screenshot']['tmp_name'], $saved_path)) {
+            // strip image meta data
+            try {
+                $img = new Imagick($saved_path);
+                $profiles = $img->getImageProfiles("icc", true);
+                $img->stripImage();
+                if (!empty($profiles)) {
+                    $img->profileImage("icc", $profiles['icc']);
+                }
+                $img->writeImage($saved_path);
+                $img->destroy();
+            } catch (ImagickException $e) {
+            }
+
             // get image dimension
             list($width, $height) = getimagesize($saved_path);
             if ($width == false || $height == false) {
