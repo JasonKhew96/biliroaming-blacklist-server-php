@@ -73,14 +73,14 @@ if (isset($_POST['report']) && isset($_POST['uid']) && $_POST['source'] && $_POS
     $source = $_POST['source'];
     $desc = $_POST['desc'];
 
-    if (strlen($source) == 0 || strlen($source) > 16) {
+    if (strlen($source) == 0 || strlen($source) > 64) {
         echo $twig->render('report.html', [
             'alert' => '来源过短或过长',
         ]);
         return;
     }
 
-    if (strlen($desc) == 0 || strlen($desc) > 32) {
+    if (strlen($desc) == 0 || strlen($desc) > 64) {
         echo $twig->render('report.html', [
             'alert' => '说明过短或过长',
         ]);
