@@ -78,6 +78,14 @@
                 class="form-control"
                 required
               />
+              <br />
+              <img
+                id="preview"
+                src="#"
+                alt="screenshot"
+                width="360"
+                style="display: none"
+              />
             </div>
             <br />
             <div>
@@ -98,5 +106,16 @@
       integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
       crossorigin="anonymous"
     ></script>
+    <script>
+      screenshot.onchange = (evt) => {
+        const [file] = screenshot.files;
+        if (file) {
+          preview.style.display = "block";
+          preview.src = URL.createObjectURL(file);
+        } else {
+          preview.style.display = "none";
+        }
+      };
+    </script>
   </body>
 </html>
