@@ -13,6 +13,8 @@
         <h1>开放接口</h1>
         <h2>检查黑白名单</h2>
         <h3>网站已接入 cloudflare, 申请接入请到 <a href="https://b23.ink/b7jJCl">Telegram@biliroaming_chat</a> 找管理员</h3>
+        <p>举报用户请到<a href="./report.php">这里</a></p>
+        <p>查询用户请到<a href="./check.php">这里</a></p>
         <h3>UID</h3>
         <p><code>https://black.qimo.ink/status.php?uid=114514</code></p>
         <h3>access key</h3>
