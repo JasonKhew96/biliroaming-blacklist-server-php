@@ -24,6 +24,14 @@ class DBHelper
         $this->conn = null;
     }
 
+    function get_total_user_ban(): int
+    {
+        $query = "SELECT COUNT(*) FROM `ban`";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
+
     function get_user_ban(int $uid): array
     {
         $query = "SELECT * FROM `ban` WHERE `uid` = ? ORDER BY `add_time` DESC LIMIT 1;";
