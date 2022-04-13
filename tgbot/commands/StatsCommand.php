@@ -14,7 +14,7 @@ require_once 'database.php';
 class StatsCommand extends UserCommand
 {
     protected $name = 'stats';
-    protected $description = '\[管理员] 封禁指令';
+    protected $description = '\[管理员] 显示统计数据指令';
     protected $usage = '/stats';
     protected $version = '1.0.0';
     protected $private_only = true;
