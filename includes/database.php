@@ -131,4 +131,20 @@ class DBHelper
         $stat = $this->conn->prepare($query);
         return $stat->execute(array($is_deleted, $uid));
     }
+
+    function get_total_pending_report(): int
+    {
+        $query = "SELECT COUNT(*) FROM `reports` WHERE `is_deleted` = 0;";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
+
+    function get_total_report(): int
+    {
+        $query = "SELECT COUNT(*) FROM `reports`;";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
 }
