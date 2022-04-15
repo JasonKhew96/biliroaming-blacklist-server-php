@@ -8,12 +8,14 @@ require_once 'config.php';
 
 /*
 CREATE TABLE `ban` (
-  `id` int(10) UNSIGNED NOT NULL COMMENT 'id',
-  `add_time` datetime DEFAULT NULL COMMENT '添加时间',
-  `uid` int(20) DEFAULT NULL COMMENT '用户ID',
-  `add_from` text DEFAULT NULL COMMENT '封禁来源',
-  `reason` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='封禁表';
+  `id` INT(10) UNSIGNED NOT NULL,
+  `add_time` DATETIME DEFAULT NULL,
+  `uid` INT(20) DEFAULT NOT NULL,
+  `add_from` TEXT DEFAULT NULL,
+  `reason` TEXT DEFAULT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
+);
 */
 
 abstract class Actions
@@ -46,7 +48,7 @@ class DBHelper
 
     function get_total_user_ban(): int
     {
-        $query = "SELECT COUNT(*) FROM `ban`";
+        $query = "SELECT COUNT(*) FROM `ban` WHERE `is_deleted` = 0";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->fetchColumn();
@@ -54,7 +56,7 @@ class DBHelper
 
     function get_user_ban(int $uid): array
     {
-        $query = "SELECT * FROM `ban` WHERE `uid` = ? ORDER BY `add_time` DESC LIMIT 1;";
+        $query = "SELECT * FROM `ban` WHERE `uid` = ? AND `is_deleted` = 0 ORDER BY `updated_at` DESC LIMIT 1;";
         $stat = $this->conn->prepare($query);
         $stat->execute(array($uid));
         return $stat->fetchAll();
@@ -63,7 +65,7 @@ class DBHelper
     function insert_user_ban(int $uid, string $from_ip, int $from_tg, string $reason): bool
     {
         $this->insert_audit($uid, Actions::ban, $from_ip, $from_tg);
-        $query = "INSERT INTO `ban` (`add_time`, `uid`, `add_from`, `reason`) VALUES (now(), ?, ?, ?);";
+        $query = "INSERT INTO `ban` (`uid`, `add_from`, `reason`) VALUES (?, ?, ?);";
         $stat = $this->conn->prepare($query);
         return $stat->execute(array($uid, 'TG@' . $from_tg, $reason));
     }
@@ -71,7 +73,7 @@ class DBHelper
     function update_user_ban(int $uid, string $from_ip, int $from_tg, string $reason): bool
     {
         $this->insert_audit($uid, Actions::update, $from_ip, $from_tg);
-        $query = "UPDATE `ban` SET `reason` = ? WHERE `uid` = ?;";
+        $query = "UPDATE `ban` SET `reason` = ?, `updated_at` = CURRENT_TIMESTAMP() WHERE `uid` = ? AND `is_deleted` = 0 ORDER BY `updated_at` DESC LIMIT 1;";
         $stat = $this->conn->prepare($query);
         return $stat->execute(array($reason, $uid));
     }
@@ -79,7 +81,7 @@ class DBHelper
     function remove_user_ban(int $uid, string $from_ip, int $from_tg): bool
     {
         $this->insert_audit($uid, Actions::unban, $from_ip, $from_tg);
-        $query = "DELETE FROM `ban` WHERE `uid` = ?;";
+        $query = "UPDATE `ban` SET `is_deleted` = 1 WHERE `uid` = ? AND `is_deleted` = 0 ORDER BY `updated_at` DESC LIMIT 1;";
         $stat = $this->conn->prepare($query);
         return $stat->execute(array($uid));
     }
