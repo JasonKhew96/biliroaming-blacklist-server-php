@@ -58,7 +58,7 @@ class CallbackqueryCommand extends SystemCommand
                     $uid = $data[1];
                     $reason = $data[2];
 
-                    if (Utils::is_valid_uid($uid) && $db->set_report_delete($uid, true) && $db->insert_user_ban($uid, 'TG@' . $user_id, $reason) && Request::editMessageReplyMarkup([
+                    if (Utils::is_valid_uid($uid) && $db->set_report_delete($uid, true) && $db->insert_user_ban($uid, '', $user_id, $reason) && Request::editMessageReplyMarkup([
                         'chat_id' => $msg->getChat()->getId(),
                         'message_id' => $msg->getMessageId(),
                     ])->isOk()) {

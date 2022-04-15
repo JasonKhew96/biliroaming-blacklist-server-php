@@ -83,7 +83,7 @@ class UnbanCommand extends UserCommand
         }
 
         if (count($db->get_user_ban($uid)) > 0) {
-            if ($db->remove_user_ban($uid)) {
+            if ($db->remove_user_ban($uid, '', $user_id)) {
                 Request::sendMessage([
                     'chat_id' => TG_CHANNEL_ID,
                     'text' => '已解除封禁' . PHP_EOL .

@@ -107,7 +107,7 @@ class BanCommand extends UserCommand
 
         $ban = $db->get_user_ban($uid);
         if (count($ban) > 0) {
-            if ($db->update_user_ban($uid, $reason)) {
+            if ($db->update_user_ban($uid, '', $user_id, $reason)) {
                 Request::sendMessage([
                     'chat_id' => TG_CHANNEL_ID,
                     'text' => '更新封禁理由' . PHP_EOL .
@@ -126,7 +126,7 @@ class BanCommand extends UserCommand
                 );
             }
         } else {
-            if ($db->insert_user_ban($uid, 'TG@' . $user_id, $reason)) {
+            if ($db->insert_user_ban($uid, '', $user_id, $reason)) {
                 Request::sendMessage([
                     'chat_id' => TG_CHANNEL_ID,
                     'text' => '新封锁' . PHP_EOL .

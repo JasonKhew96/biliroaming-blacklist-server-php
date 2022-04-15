@@ -6,6 +6,26 @@ use PDO;
 
 require_once 'config.php';
 
+/*
+CREATE TABLE `ban` (
+  `id` int(10) UNSIGNED NOT NULL COMMENT 'id',
+  `add_time` datetime DEFAULT NULL COMMENT '添加时间',
+  `uid` int(20) DEFAULT NULL COMMENT '用户ID',
+  `add_from` text DEFAULT NULL COMMENT '封禁来源',
+  `reason` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='封禁表';
+*/
+
+abstract class Actions
+{
+    const unknown = 0;
+    const ban = 1;
+    const unban = 2;
+    const white = 3;
+    const unwhite = 4;
+    const update = 5;
+}
+
 class DBHelper
 {
 
@@ -40,22 +60,25 @@ class DBHelper
         return $stat->fetchAll();
     }
 
-    function insert_user_ban(int $uid, string $add_from, string $reason): bool
+    function insert_user_ban(int $uid, string $from_ip, int $from_tg, string $reason): bool
     {
+        $this->insert_audit($uid, Actions::ban, $from_ip, $from_tg);
         $query = "INSERT INTO `ban` (`add_time`, `uid`, `add_from`, `reason`) VALUES (now(), ?, ?, ?);";
         $stat = $this->conn->prepare($query);
-        return $stat->execute(array($uid, $add_from, $reason));
+        return $stat->execute(array($uid, 'TG@' . $from_tg, $reason));
     }
 
-    function update_user_ban(int $uid, string $reason): bool
+    function update_user_ban(int $uid, string $from_ip, int $from_tg, string $reason): bool
     {
+        $this->insert_audit($uid, Actions::update, $from_ip, $from_tg);
         $query = "UPDATE `ban` SET `reason` = ? WHERE `uid` = ?;";
         $stat = $this->conn->prepare($query);
         return $stat->execute(array($reason, $uid));
     }
 
-    function remove_user_ban(int $uid): bool
+    function remove_user_ban(int $uid, string $from_ip, int $from_tg): bool
     {
+        $this->insert_audit($uid, Actions::unban, $from_ip, $from_tg);
         $query = "DELETE FROM `ban` WHERE `uid` = ?;";
         $stat = $this->conn->prepare($query);
         return $stat->execute(array($uid));
@@ -69,15 +92,17 @@ class DBHelper
         return $stat->fetchAll();
     }
 
-    function insert_user_white(int $uid, string $add_from, string $reason): bool
+    function insert_user_white(int $uid, string $from_ip, int $from_tg, string $reason): bool
     {
+        $this->insert_audit($uid, Actions::white, $from_ip, $from_tg);
         $query = "INSERT INTO `white` (`add_time`, `uid`, `add_from`, `reason`) VALUES (now(), ?, ?, ?);";
         $stat = $this->conn->prepare($query);
-        return $stat->execute(array($uid, $add_from, $reason));
+        return $stat->execute(array($uid, 'TG@' . $from_tg, $reason));
     }
 
-    function remove_user_white(int $uid): bool
+    function remove_user_white(int $uid, string $from_ip, int $from_tg): bool
     {
+        $this->insert_audit($uid, Actions::unwhite, $from_ip, $from_tg);
         $query = "DELETE FROM `white` WHERE `uid` = ?;";
         $stat = $this->conn->prepare($query);
         return $stat->execute(array($uid));
@@ -100,13 +125,13 @@ class DBHelper
 
     /*
     CREATE TABLE `reports` (
-    `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    `uid` BIGINT UNSIGNED NOT NULL,
-    `source` VARCHAR(16) NOT NULL,
-    `desc` VARCHAR(16) NOT NULL,
-    `from_ip` VARCHAR(45) NOT NULL,
-    `is_deleted` BOOLEAN NOT NULL DEFAULT 0,
-    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
+        `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        `uid` BIGINT UNSIGNED NOT NULL,
+        `source` VARCHAR(16) NOT NULL,
+        `desc` VARCHAR(16) NOT NULL,
+        `from_ip` VARCHAR(45) NOT NULL,
+        `is_deleted` BOOLEAN NOT NULL DEFAULT 0,
+        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
     );
     */
 
@@ -146,5 +171,23 @@ class DBHelper
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->fetchColumn();
+    }
+
+    /*
+    CREATE TABLE `audits` (
+        `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        `uid` BIGINT UNSIGNED NOT NULL,
+        `actions` TINYINT UNSIGNED NOT NULL,
+        `from_ip` VARCHAR(45),
+        `from_tg` BIGINT UNSIGNED,
+        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
+    );
+    */
+
+    function insert_audit(int $uid, int $actions, string $from_ip, int $from_tg): bool
+    {
+        $query = "INSERT INTO `audits` (`uid`, `actions`, `from_ip`, `from_tg`) VALUES (?, ?, ?, ?);";
+        $stat = $this->conn->prepare($query);
+        return $stat->execute(array($uid, $actions, $from_ip, $from_tg));
     }
 }
