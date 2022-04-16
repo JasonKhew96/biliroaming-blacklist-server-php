@@ -226,4 +226,12 @@ class DBHelper
         $stat = $this->conn->prepare($query);
         return $stat->execute(array($uid));
     }
+
+    function get_total_recorded_users(): int
+    {
+        $query = "SELECT COUNT(*) FROM `users`;";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
 }

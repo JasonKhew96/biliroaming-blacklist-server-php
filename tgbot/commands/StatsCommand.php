@@ -50,7 +50,8 @@ class StatsCommand extends UserCommand
         $count = $db->get_total_user_ban();
         $pending_report = $db->get_total_pending_report();
         $total_report = $db->get_total_report();
-        $text = '被封禁用户: ' . $count . PHP_EOL . '待处理网页举报: ' . $pending_report . PHP_EOL . '总网页举报: ' . $total_report;
+        $total_users = $db->get_total_recorded_users();
+        $text = '被封禁用户: ' . $count . PHP_EOL . '待处理网页举报: ' . $pending_report . PHP_EOL . '总网页举报: ' . $total_report . PHP_EOL . '已记录用户数量: ' . $total_users;
         return $this->replyToChat($text, [
             'reply_to_message_id' => $msg_id
         ]);
