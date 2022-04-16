@@ -93,7 +93,7 @@ class DBHelper
     function insert_user_ban(int $uid, string $from_ip, int $from_tg, string $reason): bool
     {
         $this->insert_audit($uid, Actions::ban, $from_ip, $from_tg);
-        $query = "INSERT INTO `ban` (`uid`, `add_from`, `reason`, `created_at`) VALUES (?, ?, ?, CURRENT_TIMESTAMP());";
+        $query = "INSERT INTO `ban` (`uid`, `add_from`, `reason`) VALUES (?, ?, ?);";
         $stat = $this->conn->prepare($query);
         return $stat->execute(array($uid, 'TG@' . $from_tg, $reason));
     }
@@ -155,7 +155,7 @@ class DBHelper
 
     function insert_report(int $uid, string $source, string $desc, string $from_ip): bool
     {
-        $query = "INSERT INTO `reports` (`uid`, `source`, `desc`, `from_ip`, `created_at`) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP());";
+        $query = "INSERT INTO `reports` (`uid`, `source`, `desc`, `from_ip`) VALUES (?, ?, ?, ?);";
         $stat = $this->conn->prepare($query);
         return $stat->execute(array($uid, $source, $desc, $from_ip));
     }
@@ -193,7 +193,7 @@ class DBHelper
 
     function insert_audit(int $uid, int $actions, string $from_ip, int $from_tg): bool
     {
-        $query = "INSERT INTO `audits` (`uid`, `actions`, `from_ip`, `from_tg`, `created_at`) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP());";
+        $query = "INSERT INTO `audits` (`uid`, `actions`, `from_ip`, `from_tg`) VALUES (?, ?, ?, ?);";
         $stat = $this->conn->prepare($query);
         return $stat->execute(array($uid, $actions, $from_ip, $from_tg));
     }
