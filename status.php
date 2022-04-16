@@ -47,6 +47,12 @@ function check_uid(DBHelper $db, int $uid)
         $is_whitelist = true;
     }
 
+    if ($db->get_user($uid) > 0) {
+        $db->user_counter_increment($uid);
+    } else {
+        $db->insert_user($uid);
+    }
+
     Utils::write_json_extra($uid, $reason, $is_blacklist, $is_whitelist);
 }
 

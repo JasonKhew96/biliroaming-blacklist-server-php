@@ -44,6 +44,13 @@ CREATE TABLE `audits` (
   `from_tg` bigint(20) UNSIGNED DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 );
+
+CREATE TABLE `users` (
+  `uid` bigint(20) UNSIGNED NOT NULL PRIMARY KEY,
+  `counter` int(10) UNSIGNED NOT NULL DEFAULT 1,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+);
 */
 
 abstract class Actions
@@ -196,5 +203,27 @@ class DBHelper
         $query = "INSERT INTO `audits` (`uid`, `actions`, `from_ip`, `from_tg`) VALUES (?, ?, ?, ?);";
         $stat = $this->conn->prepare($query);
         return $stat->execute(array($uid, $actions, $from_ip, $from_tg));
+    }
+
+    function get_user(int $uid): int
+    {
+        $query = "SELECT COUNT(*) FROM `users` WHERE `uid` = ?;";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute(array($uid));
+        return $stmt->fetchColumn();
+    }
+
+    function insert_user(int $uid): bool
+    {
+        $query = "INSERT INTO `users` (`uid`) VALUES (?);";
+        $stat = $this->conn->prepare($query);
+        return $stat->execute(array($uid));
+    }
+
+    function user_counter_increment(int $uid): bool
+    {
+        $query = "UPDATE `users` SET `counter` = `counter` + 1 WHERE `uid` = ?;";
+        $stat = $this->conn->prepare($query);
+        return $stat->execute(array($uid));
     }
 }
