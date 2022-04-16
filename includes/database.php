@@ -14,7 +14,7 @@ CREATE TABLE `ban` (
   `reason` text DEFAULT NULL,
   `is_deleted` tinyint(1) NOT NULL DEFAULT 0,
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 );
 
 CREATE TABLE `keys` (
@@ -33,7 +33,7 @@ CREATE TABLE `reports` (
   `desc` varchar(128) NOT NULL,
   `from_ip` varchar(45) NOT NULL,
   `is_deleted` tinyint(1) NOT NULL DEFAULT 0,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 );
 
 CREATE TABLE `audits` (
@@ -42,7 +42,7 @@ CREATE TABLE `audits` (
   `actions` tinyint(3) UNSIGNED NOT NULL,
   `from_ip` varchar(45) DEFAULT NULL,
   `from_tg` bigint(20) UNSIGNED DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 );
 */
 
@@ -93,7 +93,7 @@ class DBHelper
     function insert_user_ban(int $uid, string $from_ip, int $from_tg, string $reason): bool
     {
         $this->insert_audit($uid, Actions::ban, $from_ip, $from_tg);
-        $query = "INSERT INTO `ban` (`uid`, `add_from`, `reason`) VALUES (?, ?, ?);";
+        $query = "INSERT INTO `ban` (`uid`, `add_from`, `reason`, `created_at`) VALUES (?, ?, ?, CURRENT_TIMESTAMP());";
         $stat = $this->conn->prepare($query);
         return $stat->execute(array($uid, 'TG@' . $from_tg, $reason));
     }
@@ -101,7 +101,7 @@ class DBHelper
     function update_user_ban(int $uid, string $from_ip, int $from_tg, string $reason): bool
     {
         $this->insert_audit($uid, Actions::update, $from_ip, $from_tg);
-        $query = "UPDATE `ban` SET `reason` = ?, `updated_at` = CURRENT_TIMESTAMP() WHERE `uid` = ? AND `is_deleted` = 0 ORDER BY `updated_at` DESC LIMIT 1;";
+        $query = "UPDATE `ban` SET `reason` = ? WHERE `uid` = ? AND `is_deleted` = 0 ORDER BY `updated_at` DESC LIMIT 1;";
         $stat = $this->conn->prepare($query);
         return $stat->execute(array($reason, $uid));
     }
@@ -155,7 +155,7 @@ class DBHelper
 
     function insert_report(int $uid, string $source, string $desc, string $from_ip): bool
     {
-        $query = "INSERT INTO `reports` (`uid`, `source`, `desc`, `from_ip`) VALUES (?, ?, ?, ?);";
+        $query = "INSERT INTO `reports` (`uid`, `source`, `desc`, `from_ip`, `created_at`) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP());";
         $stat = $this->conn->prepare($query);
         return $stat->execute(array($uid, $source, $desc, $from_ip));
     }
@@ -191,20 +191,9 @@ class DBHelper
         return $stmt->fetchColumn();
     }
 
-    /*
-    CREATE TABLE `audits` (
-        `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-        `uid` BIGINT UNSIGNED NOT NULL,
-        `actions` TINYINT UNSIGNED NOT NULL,
-        `from_ip` VARCHAR(45),
-        `from_tg` BIGINT UNSIGNED,
-        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
-    );
-    */
-
     function insert_audit(int $uid, int $actions, string $from_ip, int $from_tg): bool
     {
-        $query = "INSERT INTO `audits` (`uid`, `actions`, `from_ip`, `from_tg`) VALUES (?, ?, ?, ?);";
+        $query = "INSERT INTO `audits` (`uid`, `actions`, `from_ip`, `from_tg`, `created_at`) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP());";
         $stat = $this->conn->prepare($query);
         return $stat->execute(array($uid, $actions, $from_ip, $from_tg));
     }
