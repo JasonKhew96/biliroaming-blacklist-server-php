@@ -8,13 +8,41 @@ require_once 'config.php';
 
 /*
 CREATE TABLE `ban` (
-  `id` INT(10) UNSIGNED NOT NULL,
-  `add_time` DATETIME DEFAULT NULL,
-  `uid` INT(20) DEFAULT NOT NULL,
-  `add_from` TEXT DEFAULT NULL,
-  `reason` TEXT DEFAULT NULL,
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
-  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
+  `id` int(10) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `uid` int(20) DEFAULT NULL,
+  `add_from` text DEFAULT NULL,
+  `reason` text DEFAULT NULL,
+  `is_deleted` tinyint(1) NOT NULL DEFAULT 0,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+);
+
+CREATE TABLE `keys` (
+  `id` int(10) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `add_time` datetime NOT NULL,
+  `uid` int(20) DEFAULT NULL,
+  `access_key` varchar(100) DEFAULT NULL,
+  `login` tinyint(1) NOT NULL DEFAULT 1,
+  `due_date` bigint(20) DEFAULT NULL
+);
+
+CREATE TABLE `reports` (
+  `id` int(10) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `uid` bigint(20) UNSIGNED NOT NULL,
+  `source` varchar(128) NOT NULL,
+  `desc` varchar(128) NOT NULL,
+  `from_ip` varchar(45) NOT NULL,
+  `is_deleted` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+);
+
+CREATE TABLE `audits` (
+  `id` int(10) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `uid` bigint(20) UNSIGNED NOT NULL,
+  `actions` tinyint(3) UNSIGNED NOT NULL,
+  `from_ip` varchar(45) DEFAULT NULL,
+  `from_tg` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 );
 */
 
@@ -124,18 +152,6 @@ class DBHelper
         $stat = $this->conn->prepare($query);
         return $stat->execute(array($uid, $access_key));
     }
-
-    /*
-    CREATE TABLE `reports` (
-        `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-        `uid` BIGINT UNSIGNED NOT NULL,
-        `source` VARCHAR(16) NOT NULL,
-        `desc` VARCHAR(16) NOT NULL,
-        `from_ip` VARCHAR(45) NOT NULL,
-        `is_deleted` BOOLEAN NOT NULL DEFAULT 0,
-        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
-    );
-    */
 
     function insert_report(int $uid, string $source, string $desc, string $from_ip): bool
     {
