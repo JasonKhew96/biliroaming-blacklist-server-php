@@ -95,7 +95,7 @@ class WhiteCommand extends UserCommand
                 ]
             );
         } else {
-            if ($db->insert_user_white($uid, 'TG@' . $user_id, $reason)) {
+            if ($db->insert_user_white($uid, '', $user_id, $reason)) {
                 return $this->replyToChat(
                     '已添加白名单 <a href="https://space.bilibili.com/' . $uid . '">' . $uname . '</a>',
                     [
