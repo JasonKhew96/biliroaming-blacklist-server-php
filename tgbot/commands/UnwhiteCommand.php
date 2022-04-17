@@ -82,7 +82,7 @@ class UnwhiteCommand extends UserCommand
         }
 
         if (count($db->get_user_white($uid)) > 0) {
-            if ($db->remove_user_white($uid)) {
+            if ($db->remove_user_white($uid, '', $user_id)) {
                 return $this->replyToChat(
                     '已解除白名单 <a href="https://space.bilibili.com/' . $uid . '">' . $uname . '</a>',
                     [
