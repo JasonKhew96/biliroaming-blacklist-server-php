@@ -68,6 +68,13 @@ class UidCommand extends UserCommand
             );
         }
 
+        // 检查是否是管理员
+        $is_admin = false;
+        $user_id = $message->getFrom()->getId();
+        if ($this->telegram->isAdmin($user_id)) {
+            $is_admin = true;
+        }
+
         $uname = $info->data[0]->uname;
 
         try {
@@ -80,7 +87,10 @@ class UidCommand extends UserCommand
                 ]
             );
         }
+        $counter = $db->get_user_counter($uid);
         $data_ban = $db->get_user_ban($uid);
+
+        $tail = $is_admin ? ('请求黑名单服务器次数: ' . ($counter ? $counter : 0)) : '';
 
         if (count($data_ban) > 0) {
             $data = $data_ban[0];
@@ -88,7 +98,8 @@ class UidCommand extends UserCommand
             return $this->replyToChat(
                 'UID: <code>' . $uid . '</code>' . PHP_EOL .
                     '用户空间: <a href="https://space.bilibili.com/' . $uid . '">' . $uname . '</a>' . PHP_EOL .
-                    '该用户的封禁原因是: ' . $reason,
+                    '该用户的封禁原因是: ' . $reason . PHP_EOL .
+                    $tail,
                 [
                     'parse_mode' => 'HTML',
                     'reply_to_message_id' => $msg_id
@@ -100,7 +111,8 @@ class UidCommand extends UserCommand
         if (count($data_white) > 0) {
             $data = $data_white[0];
             return $this->replyToChat(
-                '白名单用户',
+                '白名单用户' . PHP_EOL .
+                    $tail,
                 [
                     'reply_to_message_id' => $msg_id
                 ]
@@ -108,7 +120,8 @@ class UidCommand extends UserCommand
         }
 
         return $this->replyToChat(
-            '该用户不是黑名单也不是白名单',
+            '该用户不是黑名单也不是白名单' . PHP_EOL .
+                $tail,
             [
                 'reply_to_message_id' => $msg_id
             ]
