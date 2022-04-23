@@ -137,6 +137,7 @@ class KeyCommand extends UserCommand
                     '白名单用户' . PHP_EOL .
                     $tail,
                 [
+                    'parse_mode' => 'HTML',
                     'reply_to_message_id' => $msg_id
                 ]
             );
@@ -148,6 +149,7 @@ class KeyCommand extends UserCommand
                 '该用户不是黑名单也不是白名单' . PHP_EOL .
                 $tail,
             [
+                'parse_mode' => 'HTML',
                 'reply_to_message_id' => $msg_id
             ]
         );
