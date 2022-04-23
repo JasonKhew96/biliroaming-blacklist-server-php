@@ -116,7 +116,7 @@ class DBHelper
     function remove_user_ban(int $uid, string $from_ip, int $from_tg): bool
     {
         $this->insert_audit($uid, Actions::unban, $from_ip, $from_tg);
-        $query = "UPDATE `ban` SET `is_deleted` = 1 WHERE `uid` = ? AND `is_deleted` = 0 ORDER BY `updated_at` DESC LIMIT 1;";
+        $query = "UPDATE `ban` SET `is_deleted` = 1 WHERE `uid` = ? AND `is_deleted` = 0;";
         $stat = $this->conn->prepare($query);
         return $stat->execute(array($uid));
     }
