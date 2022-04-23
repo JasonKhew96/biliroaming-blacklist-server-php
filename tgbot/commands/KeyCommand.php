@@ -132,7 +132,9 @@ class KeyCommand extends UserCommand
         if (count($data_white) > 0) {
             $data = $data_white[0];
             return $this->replyToChat(
-                '白名单用户' . PHP_EOL .
+                'UID: <code>' . $uid . '</code>' . PHP_EOL .
+                    '用户空间: <a href="https://space.bilibili.com/' . $uid . '">' . $uname . '</a>' . PHP_EOL .
+                    '白名单用户' . PHP_EOL .
                     $tail,
                 [
                     'reply_to_message_id' => $msg_id
@@ -141,7 +143,9 @@ class KeyCommand extends UserCommand
         }
 
         return $this->replyToChat(
-            '该用户不是黑名单也不是白名单' . PHP_EOL .
+            'UID: <code>' . $uid . '</code>' . PHP_EOL .
+                '用户空间: <a href="https://space.bilibili.com/' . $uid . '">' . $uname . '</a>' . PHP_EOL .
+                '该用户不是黑名单也不是白名单' . PHP_EOL .
                 $tail,
             [
                 'reply_to_message_id' => $msg_id
