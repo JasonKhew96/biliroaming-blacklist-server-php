@@ -58,7 +58,7 @@ class CallbackqueryCommand extends SystemCommand
                     $uid = $data[1];
                     $reason = $data[2];
 
-                    if (Utils::is_valid_uid($uid) && $db->set_report_delete($uid, true) && $db->insert_user_ban($uid, '', $user_id, $reason) && Request::editMessageReplyMarkup([
+                    if (Utils::is_valid_uid($uid) && $db->set_report_delete($uid, true) && count($db->get_user_ban($uid)) > 0 && $db->insert_user_ban($uid, '', $user_id, $reason) && Request::editMessageReplyMarkup([
                         'chat_id' => $msg->getChat()->getId(),
                         'message_id' => $msg->getMessageId(),
                     ])->isOk()) {
@@ -75,6 +75,16 @@ class CallbackqueryCommand extends SystemCommand
                         return $callback_query->answer([
                             'text'       => '成功封禁',
                             'show_alert' => false,
+                            'cache_time' => 5,
+                        ]);
+                    } else {
+                        Request::deleteMessage([
+                            'chat_id' => $msg->getChat()->getId(),
+                            'message_id' => $msg->getMessageId(),
+                        ]);
+                        return $callback_query->answer([
+                            'text'       => '封禁失败',
+                            'show_alert' => true,
                             'cache_time' => 5,
                         ]);
                     }
