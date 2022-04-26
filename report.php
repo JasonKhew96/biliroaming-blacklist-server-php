@@ -132,6 +132,7 @@ if (isset($_POST['report']) && isset($_POST['uid']) && $_POST['source'] && $_POS
 
                     $inline_keyboard = new InlineKeyboard([
                         ['text' => '拉黑', 'callback_data' => 'ban_' . $uid . '_' . $desc],
+                        ['text' => '查询', 'callback_data' => 'query_' . $uid],
                         ['text' => '忽略', 'callback_data' => 'ignore_' . $uid],
                     ]);
 

@@ -121,6 +121,18 @@ class CallbackqueryCommand extends SystemCommand
                         ]);
                     }
                 }
+            } else if (str_starts_with($callback_data, 'query_')) {
+                $data = explode('_', $callback_data);
+                if (count($data) == 2) {
+                    $uid = $data[1];
+                    if (Utils::is_valid_uid($uid)) {
+                        return $callback_query->answer([
+                            'text'       => '请求黑名单服务器次数: ' . $db->get_user_counter($uid),
+                            'show_alert' => true,
+                            'cache_time' => 5,
+                        ]);
+                    }
+                }
             }
         } catch (\Throwable $th) {
             return $callback_query->answer([
