@@ -242,4 +242,12 @@ class DBHelper
         $stmt->execute();
         return $stmt->fetchColumn();
     }
+
+    function get_last_requested_blacklist_users(): array
+    {
+        $query = "SELECT `users`.`updated_at`, `ban`.`uid`, `ban`.`reason` FROM `ban` INNER JOIN `users` ON `users`.`uid` = `ban`.`uid` WHERE `ban`.`is_deleted` = 0 ORDER BY `users`.`updated_at` DESC, `ban`.`updated_at` DESC LIMIT 10;";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
 }
