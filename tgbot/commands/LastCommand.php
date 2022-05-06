@@ -2,11 +2,9 @@
 
 namespace Longman\TelegramBot\Commands\UserCommands;
 
-use Qimo\BiliApi;
 use Qimo\DBHelper;
 use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Entities\ServerResponse;
-use Longman\TelegramBot\Request;
 use PDOException;
 
 set_include_path($_SERVER['DOCUMENT_ROOT'] . '/includes/');
