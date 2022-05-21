@@ -108,10 +108,13 @@ class KeyCommand extends UserCommand
 
         $uname = $info->data[0]->uname;
 
-        $counter = $db->get_user_counter($uid);
+        $user = $db->get_user_from_uid($uid);
         $data_ban = $db->get_user_ban($uid);
 
-        $tail = $is_admin ? ('请求黑名单服务器次数: ' . ($counter ? $counter : 0)) : '';
+        $footer = $is_admin ?
+        ('请求黑名单服务器次数: ' . ($user['counter'] ? $user['counter'] : 0) . PHP_EOL .
+            '上一次请求: ' . $user['updated_at']) :
+        '';
 
         if (count($data_ban) > 0) {
             $data = $data_ban[0];
@@ -120,7 +123,7 @@ class KeyCommand extends UserCommand
                 'UID: <code>' . $uid . '</code>' . PHP_EOL .
                     '用户空间: <a href="https://space.bilibili.com/' . $uid . '">' . $uname . '</a>' . PHP_EOL .
                     '该用户的封禁原因是: ' . $reason . PHP_EOL .
-                    $tail,
+                    $footer,
                 [
                     'parse_mode' => 'HTML',
                     'reply_to_message_id' => $msg_id
@@ -135,7 +138,7 @@ class KeyCommand extends UserCommand
                 'UID: <code>' . $uid . '</code>' . PHP_EOL .
                     '用户空间: <a href="https://space.bilibili.com/' . $uid . '">' . $uname . '</a>' . PHP_EOL .
                     '白名单用户' . PHP_EOL .
-                    $tail,
+                    $footer,
                 [
                     'parse_mode' => 'HTML',
                     'reply_to_message_id' => $msg_id
@@ -147,7 +150,7 @@ class KeyCommand extends UserCommand
             'UID: <code>' . $uid . '</code>' . PHP_EOL .
                 '用户空间: <a href="https://space.bilibili.com/' . $uid . '">' . $uname . '</a>' . PHP_EOL .
                 '该用户不是黑名单也不是白名单' . PHP_EOL .
-                $tail,
+                $footer,
             [
                 'parse_mode' => 'HTML',
                 'reply_to_message_id' => $msg_id

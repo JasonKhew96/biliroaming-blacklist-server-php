@@ -125,10 +125,11 @@ class CallbackqueryCommand extends SystemCommand
                 $data = explode('_', $callback_data);
                 if (count($data) == 2) {
                     $uid = $data[1];
-                    $counter = $db->get_user_counter($uid);
+                    $user = $db->get_user_from_uid($uid);
                     if (Utils::is_valid_uid($uid)) {
                         return $callback_query->answer([
-                            'text'       => '请求黑名单服务器次数: ' . ($counter ? $counter : 0),
+                            'text'       => '请求黑名单服务器次数: ' . ($user['counter'] ? $user['counter'] : 0) . PHP_EOL .
+                                '上一次请求: ' . $user['updated_at'],
                             'show_alert' => true,
                             'cache_time' => 5,
                         ]);
