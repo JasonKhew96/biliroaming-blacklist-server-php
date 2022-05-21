@@ -227,12 +227,12 @@ class DBHelper
         return $stat->execute(array($uid));
     }
 
-    function get_user_counter(int $uid): int|bool
+    function get_user_from_uid(int $uid)
     {
-        $query = "SELECT `counter` FROM `users` WHERE `uid` = ? LIMIT 1;";
+        $query = "SELECT `counter`, `updated_at` FROM `users` WHERE `uid` = ? LIMIT 1;";
         $stmt = $this->conn->prepare($query);
         $stmt->execute(array($uid));
-        return $stmt->fetchColumn();
+        return $stmt->fetch();
     }
 
     function get_total_recorded_users(): int
